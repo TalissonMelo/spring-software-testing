@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -21,12 +23,18 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@NotBlank
 	private String name;
+	
+	@Email
+	@NotBlank
 	private String email;
 	
 	@CreationTimestamp
 	private LocalDateTime userRegister;
-	
 	private LocalDateTime userUpdate;
+	
+	@NotBlank
 	private String password;
 }

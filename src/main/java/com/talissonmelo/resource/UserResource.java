@@ -3,6 +3,8 @@ package com.talissonmelo.resource;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,7 +44,7 @@ public class UserResource {
 	}
 	
 	@PostMapping
-	public ResponseEntity<User> insert(@RequestBody User user) {
+	public ResponseEntity<User> insert(@Valid @RequestBody User user) {
 		service.existEmail(user.getEmail());
 		user = service.insert(user);
 		URI uri = ServletUriComponentsBuilder
@@ -66,7 +68,7 @@ public class UserResource {
 	}
 	
 	@PostMapping(value = "/logon")
-	public ResponseEntity<User> logon (@PathVariable UserDTO userDTO){
+	public ResponseEntity<User> logon (@RequestBody UserDTO userDTO){
 		User user = service.logonEmailPassword(userDTO);
 		return ResponseEntity.ok().body(user);
 	}
