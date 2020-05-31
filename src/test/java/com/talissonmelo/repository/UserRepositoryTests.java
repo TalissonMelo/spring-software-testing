@@ -29,4 +29,17 @@ public class UserRepositoryTests {
 		//Verificação
 		Assertions.assertTrue(result);
 	}
+	
+	@Test
+	public void ReturnFalseExistByEmail() {
+		
+		//Cenário
+		repository.deleteAll();
+		
+		//Ação & Execução
+		boolean result = repository.existsByEmail("talis@gmail.com");
+		
+		//Verificação
+		Assertions.assertFalse(result);
+	}
 }

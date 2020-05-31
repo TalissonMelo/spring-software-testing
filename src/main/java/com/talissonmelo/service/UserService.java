@@ -50,7 +50,7 @@ public class UserService {
 	public void existEmail(String email) {
 		Boolean exist = userRepository.existsByEmail(email);
 		if (exist) {
-			throw new EntityNotFound("Email já cadastrado.");
+			throw new RuleException("Email já cadastrado.");
 		}
 	}
 
