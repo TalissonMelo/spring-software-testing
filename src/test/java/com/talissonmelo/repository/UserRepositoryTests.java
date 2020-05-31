@@ -4,42 +4,86 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.talissonmelo.entity.User;
 
-@SpringBootTest
 @ExtendWith(SpringExtension.class)
+@DataJpaTest
+//@AutoConfigureTestDatabase(replace = Replace.NONE) utilizado para não sobrescrever as configurações do banco de dados
 public class UserRepositoryTests {
 
 	@Autowired
 	UserRepository repository;
-	
+
+	@Autowired
+	TestEntityManager entityManager;
+
 	@Test
 	public void validationExistByEmail() {
-		
-		//Cenário
-		User user = User.builder().email("talis@gmail.com").name("Talisson").password("123456").build();
-		repository.save(user);
-		
-		//Ação & Execução
+
+		// Cenário
+		User user = createUser();
+		entityManager.persist(user);
+
+		// Ação & Execução
 		boolean result = repository.existsByEmail("talis@gmail.com");
-		
-		//Verificação
+
+		// Verificação
 		Assertions.assertTrue(result);
+	}
+
+	@Test
+	public void ReturnFalseExistByEmail() {
+
+		// Cenário
+		// repository.deleteAll();
+
+		// Ação & Execução
+		boolean result = repository.existsByEmail("talis@gmail.com");
+
+		// Verificação
+		Assertions.assertFalse(result);
+	}
+
+	@Test
+	public void PersistUserInDataBase() {
+		// Cenário
+		User user = createUser();
+
+		// Ação & Execução
+		User userSalve = repository.save(user);
+
+		// Verificação
+		Assertions.assertNotNull(userSalve.getId());
 	}
 	
 	@Test
-	public void ReturnFalseExistByEmail() {
+	public void FindByUserWhithEmailSuccess() {
+		// Cenário
+		User user = createUser();
+		entityManager.persist(user);
+
+		// Ação & Execução
+		User userEmail = repository.findByEmail("talis@gmail.com");
 		
-		//Cenário
-		repository.deleteAll();
+		// Verificação
+		Assertions.assertNotNull(userEmail);
+	}
+	
+	@Test
+	public void FindByNullEmailError() {
+
+		// Ação & Execução
+		User userEmail = repository.findByEmail("talis@gmail.com");
 		
-		//Ação & Execução
-		boolean result = repository.existsByEmail("talis@gmail.com");
-		
-		//Verificação
-		Assertions.assertFalse(result);
+		// Verificação
+		Assertions.assertNull(userEmail);
+	}
+	
+	public static User createUser() {
+		return User.builder().name("Talisson").email("talis@gmail.com").password("12345").build();
 	}
 }
