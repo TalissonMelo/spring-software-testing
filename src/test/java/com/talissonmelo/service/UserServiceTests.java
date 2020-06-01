@@ -33,32 +33,56 @@ public class UserServiceTests {
 		// Ação - Execução
 		service.existEmail("talis@gmail.com");
 	}
-	
+
 	@Test
 	public void validationByEmailError() {
 
 		// Cenário
 		Mockito.when(repository.existsByEmail(Mockito.anyString())).thenReturn(true);
-		
+
 		// Ação - Execução
 		Assertions.assertThrows(RuleException.class, () -> service.existEmail("talis@gmail.com"));
 	}
-	
+
 	@Test
 	public void logonAuthenticateUser() {
 		// Cenário
 		String email = "talis@gmail.com";
 		String password = "12345";
-		
+
 		User user = User.builder().id(1l).name("Talisson").email(email).password(password).build();
 		Mockito.when(repository.findByEmail(email)).thenReturn(user);
 		UserDTO dto = new UserDTO(email, password);
-		
+
 		// Ação - Execução
 		User result = service.logonEmailPassword(dto);
-		
-		//Verificação
+
+		// Verificação
 		Assertions.assertNotNull(result);
-		
+
 	}
+
+	@Test
+	public void errorAuthenticateUserEmail() {
+
+		// Cenário
+		Mockito.when(repository.findByEmail(Mockito.anyString())).thenReturn(null);
+		UserDTO dto = new UserDTO(null, "12345");
+
+		// Verificação
+		Assertions.assertThrows(RuleException.class, () -> service.logonEmailPassword(dto));
+	}
+
+	@Test
+	public void errorAuthenticateUserPassword() {
+
+		// Cenário
+		User user = User.builder().id(1l).name("Talisson").email("talis@gmail.com").password("12345").build();
+		Mockito.when(repository.findByEmail("talis@gmail.com")).thenReturn(user);
+		UserDTO dto = new UserDTO("talis@gmail.com", "123");
+
+		// Verificação
+		Assertions.assertThrows(RuleException.class, () -> service.logonEmailPassword(dto));
+	}
+
 }
