@@ -3,11 +3,12 @@ package com.talissonmelo.service;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.talissonmelo.entity.User;
 import com.talissonmelo.repository.UserRepository;
 import com.talissonmelo.service.exception.RuleException;
 
@@ -18,14 +19,14 @@ public class UserServiceTests {
 	@Autowired
 	UserService service;
 
-	@Autowired
+	@MockBean
 	UserRepository repository;
 
 	@Test
 	public void validationByEmailSuccess() {
 
 		// Cenário
-		repository.deleteAll();
+		Mockito.when(repository.existsByEmail(Mockito.anyString())).thenReturn(false);
 
 		// Ação - Execução
 		service.existEmail("talis@gmail.com");
@@ -35,8 +36,7 @@ public class UserServiceTests {
 	public void validationByEmailError() {
 
 		// Cenário
-		User user = User.builder().name("Talisson").email("talis@gmail.com").password("123456").build();
-		repository.save(user);
+		Mockito.when(repository.existsByEmail(Mockito.anyString())).thenReturn(true);
 		
 		// Ação - Execução
 		Assertions.assertThrows(RuleException.class, () -> service.existEmail("talis@gmail.com"));
